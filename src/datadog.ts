@@ -95,7 +95,7 @@ export async function sendMetrics(
   timeout: number
 ): Promise<void> {
   const http: httpm.HttpClient = getClient(apiKey, timeout)
-  // distributions use a different procotol.
+  // distributions use a different protocol.
   const distributions = {series: Array()}
   const otherMetrics = {series: Array()}
   const now = Date.now() / 1000 // timestamp must be in seconds
@@ -152,7 +152,9 @@ export async function sendEvents(
         res.message.statusCode >= 400
       ) {
         errors++
-        core.error(`HTTP request failed: ${res.message.statusMessage}`)
+        core.error(
+          `HTTP request failed: ${res.message.statusMessage} ${res.message.statusCode}`
+        )
       }
     } catch (error) {
       if (ignoreTimeouts && isTimeoutError(error)) {
@@ -194,7 +196,9 @@ export async function sendServiceChecks(
         res.message.statusCode >= 400
       ) {
         errors++
-        core.error(`HTTP request failed: ${res.message.statusMessage}`)
+        core.error(
+          `HTTP request failed: ${res.message.statusMessage} ${res.message.statusCode}`
+        )
       }
     } catch (error) {
       if (ignoreTimeouts && isTimeoutError(error)) {
@@ -209,7 +213,7 @@ export async function sendServiceChecks(
 
   if (errors > 0) {
     throw new Error(
-      `Failed sending ${errors} out of ${serviceChecks.length} events`
+      `Failed sending ${errors} out of ${serviceChecks.length} service checks`
     )
   }
 }
@@ -236,8 +240,9 @@ export async function sendLogs(
         res.message.statusCode >= 400
       ) {
         errors++
-        core.error(`HTTP request failed: ${res.message.statusMessage}`)
-        throw new Error(`Failed sending ${errors} out of ${logs.length} events`)
+        core.error(
+          `HTTP request failed: ${res.message.statusMessage} ${res.message.statusCode}`
+        )
       }
     } catch (error) {
       if (ignoreTimeouts && isTimeoutError(error)) {
@@ -251,6 +256,6 @@ export async function sendLogs(
   }
 
   if (errors > 0) {
-    throw new Error(`Failed sending ${errors} out of ${logs.length} events`)
+    throw new Error(`Failed sending ${errors} out of ${logs.length} logs`)
   }
 }
